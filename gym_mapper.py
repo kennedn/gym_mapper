@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as dates
 import os
+import sys
 import glob
 import yaml
 from datetime import datetime
@@ -12,7 +13,8 @@ import re
 
 plt.style.use('fivethirtyeight')
 
-os.chdir("sessions")
+#os.chdir("sessions")
+os.chdir(f"{os.path.dirname(os.path.realpath(sys.argv[0]))}/sessions")
 pattern = ["*.txt"]
 plot_name='progress.png'
 
