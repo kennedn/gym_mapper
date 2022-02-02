@@ -11,12 +11,12 @@ from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 import re
 
-plt.style.use('fivethirtyeight')
 
 #os.chdir("sessions")
 os.chdir(f"{os.path.dirname(os.path.realpath(sys.argv[0]))}/sessions")
 pattern = ["*.txt"]
 plot_name='progress.png'
+pb_name='PB.txt'
 
 def plot_progress(event):
   if os.path.exists(plot_name):
@@ -48,20 +48,22 @@ def plot_progress(event):
       else:
         e[k]['values'].append(x)
 
-  
-  for k, v in e.items():
-    plt.plot_date(v['dates'], v['values'], ls='solid', label=k)
+  with open(pb_name, 'w') as f: 
+      for k, v in e.items():
+        f.write(f"{k}: {max(v['values']) if k != 'waist' else min(v['values'])}\n")
+        plt.plot_date(v['dates'], v['values'], ls='solid', label=k)
 
+  plt.style.use('fivethirtyeight')
   date_fmt = dates.DateFormatter('%d-%m-%y')
   plt.gca().xaxis.set_major_formatter(date_fmt)
   plt.gcf().set_size_inches(12, 8)
   #plt.tick_params(axis='x', which='major', labelsize = 7)
-   
-  plt.ylabel('Weight')
+  
+  plt.ylabel('Weight (KG)')
   plt.xlabel('Date')
-  plt.legend()
-   
+  
   plt.title('Gym Progress')
+  plt.legend()
   plt.savefig(plot_name) 
   print("Change detected, recreated png")
   #plt.show()
@@ -75,12 +77,12 @@ observer = Observer()
 observer.schedule(event_handler, '.')
 observer.start()
 print("Starting..")
+observer.join()
 try:
   while True:
     time.sleep(1)
 except KeyboardInterrupt:
   observer.stop()
-observer.join()
 
   
   
